@@ -86,28 +86,21 @@ class robot:
         ## 2. account for measurement noise by *adding* a noise component to dx and dy
         ##    - The noise component should be a random value between [-1.0, 1.0)*measurement_noise
         ##    - Feel free to use the function self.rand() to help calculate this noise component
+        ##    - It may help to reference the `move` function for noise calculation
         ## 3. If either of the distances, dx or dy, fall outside of the internal var, measurement_range
         ##    then we cannot record them; if they do fall in the range, then add them to the measurements list
         ##    as list.append([index, dx, dy]), this format is important for data creation done later
-
-        dx, dy = 0, 0
-
-        for landmark_index in range(self.num_landmarks):
-            # Compute dx and dy
-            dx, dy = self.landmarks[landmark_index][0] - self.x, self.landmarks[landmark_index][1] - self.y
-            # Adding noise
-            noise = self.rand() * self.measurement_noise
-            dx, dy = dx + noise, dy + noise
-            # Check if we can sense the landmark
-            if dx > self.measurement_range or dy > self.measurement_range:
-                continue
-            else:
-                # Keep track of landmark_index, dx, dy in measurements list
-                measurements.append([landmark_index, dx, dy])        
         
         ## TODO: return the final, complete list of measurements
+        for i in range(self.num_landmarks):
+            landmark = self.landmarks[i]
+            dx = landmark[0] - self.x + self.rand() * self.measurement_noise
+            dy = landmark[1] - self.y + self.rand() * self.measurement_noise
+            
+            if (abs(dx) <= self.measurement_range) and (abs(dy) <= self.measurement_range):
+                measurements.append([i, dx, dy])
+            
         return measurements
-
 
     # --------
     # make_landmarks:
